@@ -237,34 +237,35 @@ window.addEventListener('DOMContentLoaded', () => {
                 display: block;
                 margin: 0 auto;
             `;
-            form.insertAdjacentElement('afterend',statusMessage); // вставка внутрь
+            form.insertAdjacentElement('afterend',statusMessage); // вставка 
 
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
+            const formData = new FormData(form); // Собираем все данные из формы
 
-            // request.setRequestHeader('Content-type', 'multipart/form-data'); Когда мы используем XMLHttpResponse + Объект + form-data, нам заголовок устанавливается автоматически. не нужно вручную устанавливать XML format
-            request.setRequestHeader('Content-type', 'application/json'); //JSON format
-            const formData = new FormData(form); // Если PHP то только этот
-
-            const object = {};
+            // Если хотим в формате JSON, а не в формате XML
+            const object = {}; //Объект для JSON. JSON не принимает formData
             formData.forEach(function(value, key){
                 object[key] = value;
-            }); //Объект для JSON. JSON не принимает formData
+            }); 
+            // Если хотим в формате JSON, а не в формате XML
 
-            const json = JSON.stringify(object);
-
-            // request.send(formData);XML PHP
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.success);
-                    form.reset(); // чистка инпутов
-                    statusMessage.remove();
-                } else {
-                    showThanksModal(message.failure);
-                }
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(object) // formData - если XML
+            })
+            .then(data => data.text())
+            .then(data => {
+                console.log(data);
+                showThanksModal(message.success);
+                statusMessage.remove();
+            })
+            .catch(() => {
+                showThanksModal(message.failure);
+            })
+            .finally(() => {
+                form.reset(); // чистка инпутов
             });
         });
     }
@@ -292,6 +293,8 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }, 4000);
     }
-    
+
+
+
 });
 
