@@ -726,3 +726,7 @@ a {
 @keyframes fade {
     from{opacity: 0.1;}to{opacity: 1;}
 }
+.offer__slide {
+    animation-name: fade;
+    animation-duration: .6s;
+} @keyframes offer__slide {from{opacity: 0.1;to{opacity: 1;}}}
