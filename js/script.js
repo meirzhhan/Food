@@ -165,7 +165,7 @@ window.addEventListener('DOMContentLoaded', () => {
         render() {
             const element = document.createElement('div');
             if (this.classes.length === 0) {
-                    this.element = 'menu__item';
+                this.element = 'menu__item';
                 element.classList.add(this.element);
             } else {
                 this.classes.forEach(className => element.classList.add(className));
@@ -182,36 +182,49 @@ window.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             this.parent.append(element);
-        }
-        
+        }        
     }
 
-    new MenuCard(
-        "img/tabs/vegy.jpg",
-        "vegy",
-        '"Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        9,
-        '.menu .container'
-    ).render();
+    const getResource = async url => { // Возвращает Promise fetch-а. Async - внутри функции асинхронный код
+        const res = await fetch(url);
 
-    new MenuCard(
-        "img/tabs/elite.jpg",
-        "elite",
-        '“Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        14,
-        '.menu .container'
-    ).render();
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+        }
 
-    new MenuCard(
-        "img/tabs/post.jpg",
-        "post",
-        '"Постное"',
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        21,
-        '.menu .container'
-    ).render();
+        return await res.json(); //await - ждёт окончания promise
+    };
+
+    getResource('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+            });
+        })
+
+    // Если создавать динамически(только одну штуку)
+    // getResource('http://localhost:3000/menu')
+    //     .then(data => createCard(data)); 
+    
+    // function createCard(data) {
+    //     data.forEach(({img, altimg, title, descr, price}) => {
+    //         price = price * 480;
+    //         const element = document.createElement('div');
+    //         element.classList.add('menu__item');
+
+    //         element.innerHTML = `
+    //             <img src=${img} alt=${altimg}>
+    //             <h3 class="menu__item-subtitle">Меню ${title}</h3>
+    //             <div class="menu__item-descr">${descr}</div>
+    //             <div class="menu__item-divider"></div>
+    //             <div class="menu__item-price">
+    //                 <div class="menu__item-cost">Цена:</div>
+    //                 <div class="menu__item-total"><span>${price}</span> тг/день</div>
+    //             </div>                
+    //         `
+    //         document.querySelector('.menu .container').append(element);
+    //     });
+    // }
 
     // Forms
     // Shift + F5
@@ -224,14 +237,25 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     forms.forEach(item => { 
-        postData(item);
+        bindPostData(item);
     });
 
-    function postData(form) {
+    const postData = async (url, data) => { // Возвращает Promise fetch-а. Async - внутри функции асинхронный код
+        const res = await fetch(url, { //await -ждёт результат запроса
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data   
+        }); 
+        return await res.json(); //await - ждёт окончания promise
+    };
+
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => { //При выполнении формы
             e.preventDefault();
 
-            const statusMessage = document.createElement('img');
+            const   statusMessage = document.createElement('img');
             statusMessage.src = message.loading;
             statusMessage.style.cssText = `
                 display: block;
@@ -242,20 +266,11 @@ window.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(form); // Собираем все данные из формы
 
             // Если хотим в формате JSON, а не в формате XML
-            const object = {}; //Объект для JSON. JSON не принимает formData
-            formData.forEach(function(value, key){
-                object[key] = value;
-            }); 
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
+            // formData превращаем в массив массивов, затем в обычный объект, затем в json
             // Если хотим в формате JSON, а не в формате XML
 
-            fetch('server.php', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(object) // formData - если XML
-            })
-            .then(data => data.text())
+            postData('http://localhost:3000/requests', json)
             .then(data => {
                 console.log(data);
                 showThanksModal(message.success);
@@ -294,7 +309,8 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
-
-
+    // fetch('http://localhost:3000/menu')
+    //     .then(data => data.json())
+    //     .then(res => console.log(res));
 });
 
