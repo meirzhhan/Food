@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Timer
 
-    const deadLine = '2023-11-08';
+    const deadLine = '2023-12-01';
 
     function getTimeRemaining(endtime) {
         const t = Date.parse(endtime) - Date.parse(new Date()),
@@ -185,22 +185,29 @@ window.addEventListener('DOMContentLoaded', () => {
         }        
     }
 
-    const getResource = async url => { // Возвращает Promise fetch-а. Async - внутри функции асинхронный код
-        const res = await fetch(url);
+    // const getResource = async url => { // Возвращает Promise fetch-а. Async - внутри функции асинхронный код
+    //     const res = await fetch(url);
 
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
+    //     if (!res.ok) {
+    //         throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+    //     }
 
-        return await res.json(); //await - ждёт окончания promise
-    };
+    //     return await res.json(); //await - ждёт окончания promise
+    // };
 
-    getResource('http://localhost:3000/menu')
+    // getResource('http://localhost:3000/menu')
+    //     .then(data => {
+    //         data.forEach(({img, altimg, title, descr, price}) => {
+    //             new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+    //         });
+    //     })
+
+    axios.get('http://localhost:3000/menu')
         .then(data => {
-            data.forEach(({img, altimg, title, descr, price}) => {
+            data.data.forEach(({img, altimg, title, descr, price}) => {
                 new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
             });
-        })
+        });
 
     // Если создавать динамически(только одну штуку)
     // getResource('http://localhost:3000/menu')
