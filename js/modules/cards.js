@@ -1,6 +1,6 @@
-function cards() {
-    //Используем классы для карточек
+import { getResource } from "../services/services";
 
+function cards() {
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) {
             this.src = src;
@@ -20,6 +20,7 @@ function cards() {
 
         render() {
             const element = document.createElement('div');
+            
             if (this.classes.length === 0) {
                 this.element = 'menu__item';
                 element.classList.add(this.element);
@@ -41,16 +42,6 @@ function cards() {
         }
     }
 
-    const getResource = async url => { // Возвращает Promise fetch-а. Async - внутри функции асинхронный код
-        const res = await fetch(url);
-
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
-
-        return await res.json(); //await - ждёт окончания promise
-    };
-
     getResource('http://localhost:3000/menu')
         .then(data => {
             data.forEach(({ img, altimg, title, descr, price }) => {
@@ -66,4 +57,4 @@ function cards() {
     //     });
 }
 
-module.exports = cards;
+export default cards;

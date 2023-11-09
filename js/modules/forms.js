@@ -1,8 +1,8 @@
-function forms() {
-    // Forms
-    // Shift + F5
-    const forms = document.querySelectorAll('form'); 
+import {closeModal, openModal} from "./modal";
+import {postData} from '../services/services';
 
+function forms(formSelector, modalTimerId) {
+    const forms = document.querySelectorAll(formSelector);
     const message = {
         loading: 'img/form/spinner.svg',
         success: 'Спасибо! Скоро мы с вам свяжемся',
@@ -12,17 +12,6 @@ function forms() {
     forms.forEach(item => { 
         bindPostData(item);
     });
-
-    const postData = async (url, data) => { // Возвращает Promise fetch-а. Async - внутри функции асинхронный код
-        const res = await fetch(url, { //await -ждёт результат запроса
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: data   
-        }); 
-        return await res.json(); //await - ждёт окончания promise
-    };
 
     function bindPostData(form) {
         form.addEventListener('submit', (e) => { //При выполнении формы
@@ -40,7 +29,7 @@ function forms() {
 
             // Если хотим в формате JSON, а не в формате XML
             const json = JSON.stringify(Object.fromEntries(formData.entries()));
-            // formData превращаем в массив массивов, затем в обычный объект, затем в json
+            // formData превращается в массив массивов, затем в обычный объект, затем в json
             // Если хотим в формате JSON, а не в формате XML
 
             postData('http://localhost:3000/requests', json)
@@ -63,7 +52,7 @@ function forms() {
 
         prevModalDialog.classList.add('hide');
         prevModalDialog.classList.remove('show');
-        openModal();
+        openModal('.modal', modalTimerId);
 
         const thanksModal = document.createElement('div');
         thanksModal.classList.add('modal__dialog');
@@ -78,14 +67,9 @@ function forms() {
             thanksModal.remove();
             prevModalDialog.classList.add('show');
             prevModalDialog.classList.remove('hide');
-            closeModal();
+            closeModal('.modal');
         }, 4000);
     }
-
-    // fetch('http://localhost:3000/menu')
-    //     .then(data => data.json())
-    //     .then(res => console.log(res));
-
 }
 
-module.exports = forms;
+export default forms;

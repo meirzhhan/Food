@@ -1,13 +1,13 @@
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
     // Slider
-    const slides = document.querySelectorAll('.offer__slide'), //все слайды
-          slider = document.querySelector('.offer__slider'), // слайдер полностью
-          prev = document.querySelector('.offer__slider-prev'), //кнопка назад
-          next = document.querySelector('.offer__slider-next'), //кнопка вперёд
-          total = document.querySelector('#total'), //количество слайдов
-          current = document.querySelector('#current'), //какой слайд открыт
-          slidesWrapper = document.querySelector('.offer__slider-wrapper'), //контейнер слайдов
-          slidesField = document.querySelector('.offer__slider-inner'), //поле слайда
+    const slides = document.querySelectorAll(slide), //все слайды
+          slider = document.querySelector(container), // слайдер полностью
+          prev = document.querySelector(prevArrow), //кнопка назад
+          next = document.querySelector(nextArrow), //кнопка вперёд
+          total = document.querySelector(totalCounter), //количество слайдов
+          current = document.querySelector(currentCounter), //какой слайд открыт
+          slidesWrapper = document.querySelector(wrapper), //контейнер слайдов
+          slidesField = document.querySelector(field), //поле слайда
           width = window.getComputedStyle(slidesWrapper).width; //ширина контейнера слайдов
     let slideIndex = 1; // иднекс слайда
     let offset = 0; //отступ 
@@ -120,4 +120,4 @@ function slider() {
 
 }
 
-module.exports = slider;
+export default slider;
